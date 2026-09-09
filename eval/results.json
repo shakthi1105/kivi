@@ -1,0 +1,1222 @@
+{
+  "summary": {
+    "total_checks": 14,
+    "passed": 14,
+    "failed": 0,
+    "useful_interventions": 6,
+    "correct_non_interventions": 8,
+    "missed_interventions": 0,
+    "incorrect_interventions": 0,
+    "wrong_decision_reason": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "expected_positive_cases": 6,
+    "expected_negative_cases": 8,
+    "avg_latency_ms": 0.412,
+    "max_latency_ms": 0.707,
+    "model_usage": "none -- deterministic phonetic matching, no LLM calls in the resolve path",
+    "estimated_cost_usd": 0.0,
+    "final_observations_row_count": 0,
+    "final_memory_entries_row_count": 0
+  },
+  "cases": [
+    {
+      "scenario_id": "brief_example",
+      "scenario_description": "Reproduces the exact example given in the assignment brief: a name and a context-scoped product term, both should be corrected.",
+      "check_id": "brief_example_check",
+      "notes": "Directly from the brief. Two independent memory entries both fire in the same sentence.",
+      "inputs": {
+        "asr_text": "ask aditya to review the sarvam kiwi service",
+        "formatted_text": "Ask Aditya to review the Sarvam Kiwi service."
+      },
+      "expected_output": "Ask Aaditya to review the Sarvam Kivi service.",
+      "actual_output": "Ask Aaditya to review the Sarvam Kivi service.",
+      "expected_intervention": true,
+      "actual_intervened": true,
+      "outcome": "useful_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 1,
+          "phonetic_key": "ATTY",
+          "context_before": null,
+          "canonical_term": "Aaditya",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.742773+00:00",
+          "created_at": "2026-09-09T17:13:45.741453+00:00"
+        },
+        {
+          "id": 2,
+          "phonetic_key": "KW",
+          "context_before": "sarvam",
+          "canonical_term": "Kivi",
+          "category": "product_term",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.744734+00:00",
+          "created_at": "2026-09-09T17:13:45.743729+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Ask",
+          "decision": "no_memory",
+          "output": "Ask",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "Aditya",
+          "decision": "intervened",
+          "output": "Aaditya",
+          "reason": "replaced with learned form 'Aaditya' (confidence 1.00, 2 observations, context-free)",
+          "candidates": [
+            {
+              "canonical_term": "Aaditya",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "to",
+          "decision": "no_memory",
+          "output": "to",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "review",
+          "decision": "no_memory",
+          "output": "review",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "Sarvam",
+          "decision": "no_memory",
+          "output": "Sarvam",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "Kiwi",
+          "decision": "intervened",
+          "output": "Kivi",
+          "reason": "replaced with learned form 'Kivi' (confidence 1.00, 2 observations, after 'sarvam')",
+          "candidates": [
+            {
+              "canonical_term": "Kivi",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": "sarvam"
+            }
+          ]
+        },
+        {
+          "token": "service",
+          "decision": "no_memory",
+          "output": "service",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.707
+    },
+    {
+      "scenario_id": "single_observation_is_not_enough",
+      "scenario_description": "A single correction is weak evidence (could be a one-off typo or joke). The system must not act on it yet.",
+      "check_id": "one_obs_no_intervention",
+      "notes": "Only 1 observation exists; MIN_OBSERVATIONS=2. Must leave text untouched, not guess.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Priyanka joined the call late."
+      },
+      "expected_output": "Priyanka joined the call late.",
+      "actual_output": "Priyanka joined the call late.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 3,
+          "phonetic_key": "PRYNK",
+          "context_before": null,
+          "canonical_term": "Priyangka",
+          "category": "person_name",
+          "observation_count": 1,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.747774+00:00",
+          "created_at": "2026-09-09T17:13:45.747774+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Priyanka",
+          "decision": "no_memory",
+          "output": "Priyanka",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "joined",
+          "decision": "no_memory",
+          "output": "joined",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "call",
+          "decision": "no_memory",
+          "output": "call",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "late",
+          "decision": "no_memory",
+          "output": "late",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.296
+    },
+    {
+      "scenario_id": "crosses_threshold_after_second_observation",
+      "scenario_description": "The same correction, once reinforced by a second independent observation, should now be trusted and applied. Tests that learning is a threshold crossed by evidence, not a one-shot event.",
+      "check_id": "before_second_obs",
+      "notes": "Still only 1 observation at this point.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Priyanka joined the call late."
+      },
+      "expected_output": "Priyanka joined the call late.",
+      "actual_output": "Priyanka joined the call late.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 4,
+          "phonetic_key": "PRYNK",
+          "context_before": null,
+          "canonical_term": "Priyangka",
+          "category": "person_name",
+          "observation_count": 1,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.750085+00:00",
+          "created_at": "2026-09-09T17:13:45.750085+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Priyanka",
+          "decision": "no_memory",
+          "output": "Priyanka",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "joined",
+          "decision": "no_memory",
+          "output": "joined",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "call",
+          "decision": "no_memory",
+          "output": "call",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "late",
+          "decision": "no_memory",
+          "output": "late",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.327
+    },
+    {
+      "scenario_id": "crosses_threshold_after_second_observation",
+      "scenario_description": "The same correction, once reinforced by a second independent observation, should now be trusted and applied. Tests that learning is a threshold crossed by evidence, not a one-shot event.",
+      "check_id": "after_second_obs",
+      "notes": "Second observation pushes observation_count to 2 and confidence to 1.0; now applied.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Priyanka joined the call late."
+      },
+      "expected_output": "Priyangka joined the call late.",
+      "actual_output": "Priyangka joined the call late.",
+      "expected_intervention": true,
+      "actual_intervened": true,
+      "outcome": "useful_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 4,
+          "phonetic_key": "PRYNK",
+          "context_before": null,
+          "canonical_term": "Priyangka",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.751808+00:00",
+          "created_at": "2026-09-09T17:13:45.750085+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Priyanka",
+          "decision": "intervened",
+          "output": "Priyangka",
+          "reason": "replaced with learned form 'Priyangka' (confidence 1.00, 2 observations, context-free)",
+          "candidates": [
+            {
+              "canonical_term": "Priyangka",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "joined",
+          "decision": "no_memory",
+          "output": "joined",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "call",
+          "decision": "no_memory",
+          "output": "call",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "late",
+          "decision": "no_memory",
+          "output": "late",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.349
+    },
+    {
+      "scenario_id": "context_scoping_protects_unrelated_sense",
+      "scenario_description": "The product term 'Kivi' was only ever taught in the context 'sarvam ___'. The same phonetic word appearing without that context (the fruit) must be left alone -- this is the central false-positive risk the brief's example hints at.",
+      "check_id": "kiwi_with_context_fires",
+      "notes": "Context word 'sarvam' immediately precedes 'kiwi' -> should correct to the product name.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "I use the Sarvam Kiwi app daily."
+      },
+      "expected_output": "I use the Sarvam Kivi app daily.",
+      "actual_output": "I use the Sarvam Kivi app daily.",
+      "expected_intervention": true,
+      "actual_intervened": true,
+      "outcome": "useful_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 5,
+          "phonetic_key": "KW",
+          "context_before": "sarvam",
+          "canonical_term": "Kivi",
+          "category": "product_term",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.755369+00:00",
+          "created_at": "2026-09-09T17:13:45.754233+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "I",
+          "decision": "no_memory",
+          "output": "I",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "use",
+          "decision": "no_memory",
+          "output": "use",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "Sarvam",
+          "decision": "no_memory",
+          "output": "Sarvam",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "Kiwi",
+          "decision": "intervened",
+          "output": "Kivi",
+          "reason": "replaced with learned form 'Kivi' (confidence 1.00, 2 observations, after 'sarvam')",
+          "candidates": [
+            {
+              "canonical_term": "Kivi",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": "sarvam"
+            }
+          ]
+        },
+        {
+          "token": "app",
+          "decision": "no_memory",
+          "output": "app",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "daily",
+          "decision": "no_memory",
+          "output": "daily",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.453
+    },
+    {
+      "scenario_id": "context_scoping_protects_unrelated_sense",
+      "scenario_description": "The product term 'Kivi' was only ever taught in the context 'sarvam ___'. The same phonetic word appearing without that context (the fruit) must be left alone -- this is the central false-positive risk the brief's example hints at.",
+      "check_id": "kiwi_without_context_is_untouched",
+      "notes": "No 'sarvam' before 'kiwi' -- must NOT rewrite the fruit into the product name. Deliberate no-op.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "I had a kiwi for breakfast this morning."
+      },
+      "expected_output": "I had a kiwi for breakfast this morning.",
+      "actual_output": "I had a kiwi for breakfast this morning.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 5,
+          "phonetic_key": "KW",
+          "context_before": "sarvam",
+          "canonical_term": "Kivi",
+          "category": "product_term",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.755369+00:00",
+          "created_at": "2026-09-09T17:13:45.754233+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "I",
+          "decision": "no_memory",
+          "output": "I",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "had",
+          "decision": "no_memory",
+          "output": "had",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "a",
+          "decision": "no_memory",
+          "output": "a",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "kiwi",
+          "decision": "no_memory",
+          "output": "kiwi",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "for",
+          "decision": "no_memory",
+          "output": "for",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "breakfast",
+          "decision": "no_memory",
+          "output": "breakfast",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "this",
+          "decision": "no_memory",
+          "output": "this",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "morning",
+          "decision": "no_memory",
+          "output": "morning",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.34
+    },
+    {
+      "scenario_id": "conflicting_corrections_are_ambiguous",
+      "scenario_description": "The user has, on different occasions, corrected the same phonetic word to two different canonical forms with equal support. The system should recognise it cannot tell them apart and do nothing rather than guess.",
+      "check_id": "ambiguous_no_intervention",
+      "notes": "'Nehal' (2 obs, 0.50 confidence) and 'Nihal' (2 obs, 0.50 confidence) are tied. Below the ambiguity margin -- must not pick one arbitrarily. Note the input already reads 'Nehal' so the visible text happens not to change, but the trace must show decision=ambiguous, not already_correct -- a tie isn't confirmation.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Nehal sent the report yesterday."
+      },
+      "expected_output": "Nehal sent the report yesterday.",
+      "actual_output": "Nehal sent the report yesterday.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {
+        "Nehal": {
+          "expected": "ambiguous",
+          "actual": "ambiguous"
+        }
+      },
+      "relevant_memory_state": [
+        {
+          "id": 6,
+          "phonetic_key": "NHL",
+          "context_before": null,
+          "canonical_term": "Nehal",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 0.5,
+          "last_seen": "2026-09-09T17:13:45.759734+00:00",
+          "created_at": "2026-09-09T17:13:45.758681+00:00"
+        },
+        {
+          "id": 7,
+          "phonetic_key": "NHL",
+          "context_before": null,
+          "canonical_term": "Nihal",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 0.5,
+          "last_seen": "2026-09-09T17:13:45.761716+00:00",
+          "created_at": "2026-09-09T17:13:45.760663+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Nehal",
+          "decision": "ambiguous",
+          "output": "Nehal",
+          "reason": "top candidates 'Nehal' (0.50) and 'Nihal' (0.50) are too close to call",
+          "candidates": [
+            {
+              "canonical_term": "Nehal",
+              "confidence": 0.5,
+              "observation_count": 2,
+              "context_before": null
+            },
+            {
+              "canonical_term": "Nihal",
+              "confidence": 0.5,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "sent",
+          "decision": "no_memory",
+          "output": "sent",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "report",
+          "decision": "no_memory",
+          "output": "report",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "yesterday",
+          "decision": "no_memory",
+          "output": "yesterday",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.43
+    },
+    {
+      "scenario_id": "weak_majority_is_not_confident_enough",
+      "scenario_description": "A correction can have more observations than its alternative without clearing the confidence bar. This tests that the system requires a clear majority, not just a plurality.",
+      "check_id": "weak_majority_no_intervention",
+      "notes": "'Zara' has 3/5=0.60 confidence, above 'Sarah' at 2/5=0.40, but below CONFIDENCE_THRESHOLD=0.66. System withholds rather than acting on a weak signal.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Sara will lead the workshop."
+      },
+      "expected_output": "Sara will lead the workshop.",
+      "actual_output": "Sara will lead the workshop.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 8,
+          "phonetic_key": "SR",
+          "context_before": null,
+          "canonical_term": "Zara",
+          "category": "person_name",
+          "observation_count": 3,
+          "confidence": 0.6,
+          "last_seen": "2026-09-09T17:13:45.766998+00:00",
+          "created_at": "2026-09-09T17:13:45.764295+00:00"
+        },
+        {
+          "id": 9,
+          "phonetic_key": "SR",
+          "context_before": null,
+          "canonical_term": "Sarah",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 0.4,
+          "last_seen": "2026-09-09T17:13:45.769082+00:00",
+          "created_at": "2026-09-09T17:13:45.767981+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Sara",
+          "decision": "low_confidence",
+          "output": "Sara",
+          "reason": "best candidate 'Zara' confidence 0.60 below threshold 0.66",
+          "candidates": [
+            {
+              "canonical_term": "Zara",
+              "confidence": 0.6,
+              "observation_count": 3,
+              "context_before": null
+            },
+            {
+              "canonical_term": "Sarah",
+              "confidence": 0.4,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "will",
+          "decision": "no_memory",
+          "output": "will",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "lead",
+          "decision": "no_memory",
+          "output": "lead",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "workshop",
+          "decision": "no_memory",
+          "output": "workshop",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.572
+    },
+    {
+      "scenario_id": "already_correct_text_is_a_no_op",
+      "scenario_description": "If the formatted transcript already contains the learned canonical form, the system should recognise this as already satisfied, not attempt a (no-op) replacement.",
+      "check_id": "already_correct_check",
+      "notes": "Distinguishes 'nothing to do because already right' from 'nothing to do because unsure' -- both are non-interventions but for different reasons, and the trace should say so.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Aaditya reviewed the pull request."
+      },
+      "expected_output": "Aaditya reviewed the pull request.",
+      "actual_output": "Aaditya reviewed the pull request.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {
+        "Aaditya": {
+          "expected": "already_correct",
+          "actual": "already_correct"
+        }
+      },
+      "relevant_memory_state": [
+        {
+          "id": 10,
+          "phonetic_key": "ATTY",
+          "context_before": null,
+          "canonical_term": "Aaditya",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.772707+00:00",
+          "created_at": "2026-09-09T17:13:45.771737+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Aaditya",
+          "decision": "already_correct",
+          "output": "Aaditya",
+          "reason": "already matches learned form 'Aaditya'",
+          "candidates": [
+            {
+              "canonical_term": "Aaditya",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "reviewed",
+          "decision": "no_memory",
+          "output": "reviewed",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "pull",
+          "decision": "no_memory",
+          "output": "pull",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "request",
+          "decision": "no_memory",
+          "output": "request",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.332
+    },
+    {
+      "scenario_id": "unrelated_text_passes_through",
+      "scenario_description": "Baseline: text containing no words the system has any memory of must be returned byte-for-byte identical.",
+      "check_id": "unrelated_text_check",
+      "notes": "No overlap with memory at all.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "The weather in Chennai is warm today."
+      },
+      "expected_output": "The weather in Chennai is warm today.",
+      "actual_output": "The weather in Chennai is warm today.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 11,
+          "phonetic_key": "ATTY",
+          "context_before": null,
+          "canonical_term": "Aaditya",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.775993+00:00",
+          "created_at": "2026-09-09T17:13:45.774980+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "The",
+          "decision": "no_memory",
+          "output": "The",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "weather",
+          "decision": "no_memory",
+          "output": "weather",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "in",
+          "decision": "no_memory",
+          "output": "in",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "Chennai",
+          "decision": "no_memory",
+          "output": "Chennai",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "is",
+          "decision": "no_memory",
+          "output": "is",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "warm",
+          "decision": "no_memory",
+          "output": "warm",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "today",
+          "decision": "no_memory",
+          "output": "today",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.359
+    },
+    {
+      "scenario_id": "casing_is_preserved_reasonably",
+      "scenario_description": "A learned word appearing in ALL CAPS (e.g. shouted/emphasised speech) should be corrected while preserving the all-caps rendering.",
+      "check_id": "all_caps_check",
+      "notes": "Casing convention (all-caps) of the original token is preserved on the corrected form.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "ADITYA IS OUT TODAY."
+      },
+      "expected_output": "AADITYA IS OUT TODAY.",
+      "actual_output": "AADITYA IS OUT TODAY.",
+      "expected_intervention": true,
+      "actual_intervened": true,
+      "outcome": "useful_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 12,
+          "phonetic_key": "ATTY",
+          "context_before": null,
+          "canonical_term": "Aaditya",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.779709+00:00",
+          "created_at": "2026-09-09T17:13:45.778765+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "ADITYA",
+          "decision": "intervened",
+          "output": "AADITYA",
+          "reason": "replaced with learned form 'Aaditya' (confidence 1.00, 2 observations, context-free)",
+          "candidates": [
+            {
+              "canonical_term": "Aaditya",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "IS",
+          "decision": "no_memory",
+          "output": "IS",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "OUT",
+          "decision": "no_memory",
+          "output": "OUT",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "TODAY",
+          "decision": "no_memory",
+          "output": "TODAY",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.39
+    },
+    {
+      "scenario_id": "multiple_entries_in_one_sentence",
+      "scenario_description": "A richer sentence exercising several unrelated memory entries together, to check they don't interfere with each other.",
+      "check_id": "multi_entry_check",
+      "notes": "'Nehal' is already correctly cased so it's a no-op; 'figma' and 'aditya' both need correcting; unrelated words pass through.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Nehal will share the figma file with aditya before lunch."
+      },
+      "expected_output": "Nehal will share the Figma file with Aaditya before lunch.",
+      "actual_output": "Nehal will share the Figma file with Aaditya before lunch.",
+      "expected_intervention": true,
+      "actual_intervened": true,
+      "outcome": "useful_intervention",
+      "passed": true,
+      "decision_checks": {
+        "Nehal": {
+          "expected": "already_correct",
+          "actual": "already_correct"
+        },
+        "figma": {
+          "expected": "intervened",
+          "actual": "intervened"
+        },
+        "aditya": {
+          "expected": "intervened",
+          "actual": "intervened"
+        }
+      },
+      "relevant_memory_state": [
+        {
+          "id": 15,
+          "phonetic_key": "ATTY",
+          "context_before": null,
+          "canonical_term": "Aaditya",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.787474+00:00",
+          "created_at": "2026-09-09T17:13:45.786532+00:00"
+        },
+        {
+          "id": 14,
+          "phonetic_key": "FKM",
+          "context_before": null,
+          "canonical_term": "Figma",
+          "category": "product_term",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.785543+00:00",
+          "created_at": "2026-09-09T17:13:45.784518+00:00"
+        },
+        {
+          "id": 13,
+          "phonetic_key": "NHL",
+          "context_before": null,
+          "canonical_term": "Nehal",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.783460+00:00",
+          "created_at": "2026-09-09T17:13:45.782228+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Nehal",
+          "decision": "already_correct",
+          "output": "Nehal",
+          "reason": "already matches learned form 'Nehal'",
+          "candidates": [
+            {
+              "canonical_term": "Nehal",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "will",
+          "decision": "no_memory",
+          "output": "will",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "share",
+          "decision": "no_memory",
+          "output": "share",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "the",
+          "decision": "no_memory",
+          "output": "the",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "figma",
+          "decision": "intervened",
+          "output": "Figma",
+          "reason": "replaced with learned form 'Figma' (confidence 1.00, 2 observations, context-free)",
+          "candidates": [
+            {
+              "canonical_term": "Figma",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "file",
+          "decision": "no_memory",
+          "output": "file",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "with",
+          "decision": "no_memory",
+          "output": "with",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "aditya",
+          "decision": "intervened",
+          "output": "Aaditya",
+          "reason": "replaced with learned form 'Aaditya' (confidence 1.00, 2 observations, context-free)",
+          "candidates": [
+            {
+              "canonical_term": "Aaditya",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "before",
+          "decision": "no_memory",
+          "output": "before",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "lunch",
+          "decision": "no_memory",
+          "output": "lunch",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.532
+    },
+    {
+      "scenario_id": "reset_wipes_learned_state",
+      "scenario_description": "After a reset, all previously learned corrections must stop applying -- memory state and observation log are both empty.",
+      "check_id": "before_reset_intervenes",
+      "notes": "Confirms the entry is live before we reset.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Aditya is presenting today."
+      },
+      "expected_output": "Aaditya is presenting today.",
+      "actual_output": "Aaditya is presenting today.",
+      "expected_intervention": true,
+      "actual_intervened": true,
+      "outcome": "useful_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [
+        {
+          "id": 16,
+          "phonetic_key": "ATTY",
+          "context_before": null,
+          "canonical_term": "Aaditya",
+          "category": "person_name",
+          "observation_count": 2,
+          "confidence": 1.0,
+          "last_seen": "2026-09-09T17:13:45.791809+00:00",
+          "created_at": "2026-09-09T17:13:45.790478+00:00"
+        }
+      ],
+      "reasoning_trace": [
+        {
+          "token": "Aditya",
+          "decision": "intervened",
+          "output": "Aaditya",
+          "reason": "replaced with learned form 'Aaditya' (confidence 1.00, 2 observations, context-free)",
+          "candidates": [
+            {
+              "canonical_term": "Aaditya",
+              "confidence": 1.0,
+              "observation_count": 2,
+              "context_before": null
+            }
+          ]
+        },
+        {
+          "token": "is",
+          "decision": "no_memory",
+          "output": "is",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "presenting",
+          "decision": "no_memory",
+          "output": "presenting",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "today",
+          "decision": "no_memory",
+          "output": "today",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.356
+    },
+    {
+      "scenario_id": "reset_wipes_learned_state",
+      "scenario_description": "After a reset, all previously learned corrections must stop applying -- memory state and observation log are both empty.",
+      "check_id": "after_reset_no_longer_intervenes",
+      "notes": "Reset must clear all memory_entries and observations; the same sentence is now untouched.",
+      "inputs": {
+        "asr_text": null,
+        "formatted_text": "Aditya is presenting today."
+      },
+      "expected_output": "Aditya is presenting today.",
+      "actual_output": "Aditya is presenting today.",
+      "expected_intervention": false,
+      "actual_intervened": false,
+      "outcome": "correct_non_intervention",
+      "passed": true,
+      "decision_checks": {},
+      "relevant_memory_state": [],
+      "reasoning_trace": [
+        {
+          "token": "Aditya",
+          "decision": "no_memory",
+          "output": "Aditya",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "is",
+          "decision": "no_memory",
+          "output": "is",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "presenting",
+          "decision": "no_memory",
+          "output": "presenting",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        },
+        {
+          "token": "today",
+          "decision": "no_memory",
+          "output": "today",
+          "reason": "no memory entry meets the observation minimum for this word",
+          "candidates": []
+        }
+      ],
+      "latency_ms": 0.332
+    }
+  ]
+}

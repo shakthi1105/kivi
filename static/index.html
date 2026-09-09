@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Kivi — Word Memory Demo</title>
+<link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+<header>
+  <h1>kivi <span>· word memory demo</span></h1>
+  <button id="resetBtn" class="danger">Reset system</button>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>1. Teach it a correction (observation)</h2>
+    <p class="hint">This models the user editing a word Kivi got wrong. Add the same
+      correction twice+ to cross the confidence threshold.</p>
+    <form id="obsForm">
+      <label>Heard / mis-formatted word <input name="heard_word" placeholder="kiwi" required /></label>
+      <label>Corrected word <input name="corrected_word" placeholder="Kivi" required /></label>
+      <label>Only after this word (optional context) <input name="context_before" placeholder="sarvam" /></label>
+      <label>Category <select name="category">
+        <option value="">(none)</option>
+        <option value="person_name">person_name</option>
+        <option value="product_term">product_term</option>
+        <option value="other">other</option>
+      </select></label>
+      <button type="submit">Add observation</button>
+    </form>
+    <div id="obsResult" class="result"></div>
+  </section>
+
+  <section class="panel">
+    <h2>2. Memory state</h2>
+    <button id="refreshMemBtn">Refresh</button>
+    <table id="memTable">
+      <thead><tr><th>Phonetic key</th><th>Context</th><th>Canonical term</th><th>Category</th>
+        <th>Obs. count</th><th>Confidence</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>3. Feed a transcript</h2>
+    <form id="resolveForm">
+      <label>ASR output (optional, shown only for context)
+        <input name="asr_text" placeholder="ask aditya to review the sarvam kiwi service" /></label>
+      <label>Formatted output (what memory acts on)
+        <textarea name="formatted_text" required placeholder="Ask Aditya to review the Sarvam Kiwi service.">Ask Aditya to review the Sarvam Kiwi service.</textarea></label>
+      <button type="submit">Resolve</button>
+    </form>
+    <div id="resolveResult"></div>
+  </section>
+
+  <section class="panel">
+    <h2>4. Raw observation log</h2>
+    <button id="refreshLogBtn">Refresh</button>
+    <table id="logTable">
+      <thead><tr><th>#</th><th>Heard</th><th>Corrected</th><th>Context</th><th>Category</th><th>Source</th><th>At</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

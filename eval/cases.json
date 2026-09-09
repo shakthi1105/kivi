@@ -1,0 +1,238 @@
+[
+  {
+    "id": "brief_example",
+    "description": "Reproduces the exact example given in the assignment brief: a name and a context-scoped product term, both should be corrected.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "kiwi", "corrected_word": "Kivi", "context_before": "sarvam", "category": "product_term"},
+      {"heard_word": "kiwi", "corrected_word": "Kivi", "context_before": "sarvam", "category": "product_term"}
+    ],
+    "checks": [
+      {
+        "id": "brief_example_check",
+        "asr_text": "ask aditya to review the sarvam kiwi service",
+        "formatted_text": "Ask Aditya to review the Sarvam Kiwi service.",
+        "expected_output": "Ask Aaditya to review the Sarvam Kivi service.",
+        "expect_intervention": true,
+        "notes": "Directly from the brief. Two independent memory entries both fire in the same sentence."
+      }
+    ]
+  },
+  {
+    "id": "single_observation_is_not_enough",
+    "description": "A single correction is weak evidence (could be a one-off typo or joke). The system must not act on it yet.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "priyanka", "corrected_word": "Priyangka", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "one_obs_no_intervention",
+        "formatted_text": "Priyanka joined the call late.",
+        "expected_output": "Priyanka joined the call late.",
+        "expect_intervention": false,
+        "notes": "Only 1 observation exists; MIN_OBSERVATIONS=2. Must leave text untouched, not guess."
+      }
+    ]
+  },
+  {
+    "id": "crosses_threshold_after_second_observation",
+    "description": "The same correction, once reinforced by a second independent observation, should now be trusted and applied. Tests that learning is a threshold crossed by evidence, not a one-shot event.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "priyanka", "corrected_word": "Priyangka", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "before_second_obs",
+        "formatted_text": "Priyanka joined the call late.",
+        "expected_output": "Priyanka joined the call late.",
+        "expect_intervention": false,
+        "notes": "Still only 1 observation at this point."
+      },
+      {
+        "id": "after_second_obs",
+        "additional_observations": [
+          {"heard_word": "priyanka", "corrected_word": "Priyangka", "category": "person_name"}
+        ],
+        "formatted_text": "Priyanka joined the call late.",
+        "expected_output": "Priyangka joined the call late.",
+        "expect_intervention": true,
+        "notes": "Second observation pushes observation_count to 2 and confidence to 1.0; now applied."
+      }
+    ]
+  },
+  {
+    "id": "context_scoping_protects_unrelated_sense",
+    "description": "The product term 'Kivi' was only ever taught in the context 'sarvam ___'. The same phonetic word appearing without that context (the fruit) must be left alone -- this is the central false-positive risk the brief's example hints at.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "kiwi", "corrected_word": "Kivi", "context_before": "sarvam", "category": "product_term"},
+      {"heard_word": "kiwi", "corrected_word": "Kivi", "context_before": "sarvam", "category": "product_term"}
+    ],
+    "checks": [
+      {
+        "id": "kiwi_with_context_fires",
+        "formatted_text": "I use the Sarvam Kiwi app daily.",
+        "expected_output": "I use the Sarvam Kivi app daily.",
+        "expect_intervention": true,
+        "notes": "Context word 'sarvam' immediately precedes 'kiwi' -> should correct to the product name."
+      },
+      {
+        "id": "kiwi_without_context_is_untouched",
+        "formatted_text": "I had a kiwi for breakfast this morning.",
+        "expected_output": "I had a kiwi for breakfast this morning.",
+        "expect_intervention": false,
+        "notes": "No 'sarvam' before 'kiwi' -- must NOT rewrite the fruit into the product name. Deliberate no-op."
+      }
+    ]
+  },
+  {
+    "id": "conflicting_corrections_are_ambiguous",
+    "description": "The user has, on different occasions, corrected the same phonetic word to two different canonical forms with equal support. The system should recognise it cannot tell them apart and do nothing rather than guess.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "nehal", "corrected_word": "Nehal", "category": "person_name"},
+      {"heard_word": "nehal", "corrected_word": "Nehal", "category": "person_name"},
+      {"heard_word": "nehal", "corrected_word": "Nihal", "category": "person_name"},
+      {"heard_word": "nehal", "corrected_word": "Nihal", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "ambiguous_no_intervention",
+        "formatted_text": "Nehal sent the report yesterday.",
+        "expected_output": "Nehal sent the report yesterday.",
+        "expect_intervention": false,
+        "expect_decisions": {"Nehal": "ambiguous"},
+        "notes": "'Nehal' (2 obs, 0.50 confidence) and 'Nihal' (2 obs, 0.50 confidence) are tied. Below the ambiguity margin -- must not pick one arbitrarily. Note the input already reads 'Nehal' so the visible text happens not to change, but the trace must show decision=ambiguous, not already_correct -- a tie isn't confirmation."
+      }
+    ]
+  },
+  {
+    "id": "weak_majority_is_not_confident_enough",
+    "description": "A correction can have more observations than its alternative without clearing the confidence bar. This tests that the system requires a clear majority, not just a plurality.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "sara", "corrected_word": "Zara", "category": "person_name"},
+      {"heard_word": "sara", "corrected_word": "Zara", "category": "person_name"},
+      {"heard_word": "sara", "corrected_word": "Zara", "category": "person_name"},
+      {"heard_word": "sara", "corrected_word": "Sarah", "category": "person_name"},
+      {"heard_word": "sara", "corrected_word": "Sarah", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "weak_majority_no_intervention",
+        "formatted_text": "Sara will lead the workshop.",
+        "expected_output": "Sara will lead the workshop.",
+        "expect_intervention": false,
+        "notes": "'Zara' has 3/5=0.60 confidence, above 'Sarah' at 2/5=0.40, but below CONFIDENCE_THRESHOLD=0.66. System withholds rather than acting on a weak signal."
+      }
+    ]
+  },
+  {
+    "id": "already_correct_text_is_a_no_op",
+    "description": "If the formatted transcript already contains the learned canonical form, the system should recognise this as already satisfied, not attempt a (no-op) replacement.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "already_correct_check",
+        "formatted_text": "Aaditya reviewed the pull request.",
+        "expected_output": "Aaditya reviewed the pull request.",
+        "expect_intervention": false,
+        "expect_decisions": {"Aaditya": "already_correct"},
+        "notes": "Distinguishes 'nothing to do because already right' from 'nothing to do because unsure' -- both are non-interventions but for different reasons, and the trace should say so."
+      }
+    ]
+  },
+  {
+    "id": "unrelated_text_passes_through",
+    "description": "Baseline: text containing no words the system has any memory of must be returned byte-for-byte identical.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "unrelated_text_check",
+        "formatted_text": "The weather in Chennai is warm today.",
+        "expected_output": "The weather in Chennai is warm today.",
+        "expect_intervention": false,
+        "notes": "No overlap with memory at all."
+      }
+    ]
+  },
+  {
+    "id": "casing_is_preserved_reasonably",
+    "description": "A learned word appearing in ALL CAPS (e.g. shouted/emphasised speech) should be corrected while preserving the all-caps rendering.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "all_caps_check",
+        "formatted_text": "ADITYA IS OUT TODAY.",
+        "expected_output": "AADITYA IS OUT TODAY.",
+        "expect_intervention": true,
+        "notes": "Casing convention (all-caps) of the original token is preserved on the corrected form."
+      }
+    ]
+  },
+  {
+    "id": "multiple_entries_in_one_sentence",
+    "description": "A richer sentence exercising several unrelated memory entries together, to check they don't interfere with each other.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "nehal", "corrected_word": "Nehal", "category": "person_name"},
+      {"heard_word": "nehal", "corrected_word": "Nehal", "category": "person_name"},
+      {"heard_word": "figma", "corrected_word": "Figma", "category": "product_term"},
+      {"heard_word": "figma", "corrected_word": "Figma", "category": "product_term"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "multi_entry_check",
+        "formatted_text": "Nehal will share the figma file with aditya before lunch.",
+        "expected_output": "Nehal will share the Figma file with Aaditya before lunch.",
+        "expect_intervention": true,
+        "expect_decisions": {"Nehal": "already_correct", "figma": "intervened", "aditya": "intervened"},
+        "notes": "'Nehal' is already correctly cased so it's a no-op; 'figma' and 'aditya' both need correcting; unrelated words pass through."
+      }
+    ]
+  },
+  {
+    "id": "reset_wipes_learned_state",
+    "description": "After a reset, all previously learned corrections must stop applying -- memory state and observation log are both empty.",
+    "reset_before": true,
+    "setup_observations": [
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"},
+      {"heard_word": "aditya", "corrected_word": "Aaditya", "category": "person_name"}
+    ],
+    "checks": [
+      {
+        "id": "before_reset_intervenes",
+        "formatted_text": "Aditya is presenting today.",
+        "expected_output": "Aaditya is presenting today.",
+        "expect_intervention": true,
+        "notes": "Confirms the entry is live before we reset."
+      },
+      {
+        "id": "after_reset_no_longer_intervenes",
+        "reset_before_this_check": true,
+        "formatted_text": "Aditya is presenting today.",
+        "expected_output": "Aditya is presenting today.",
+        "expect_intervention": false,
+        "notes": "Reset must clear all memory_entries and observations; the same sentence is now untouched."
+      }
+    ]
+  }
+]

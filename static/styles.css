@@ -1,0 +1,81 @@
+:root {
+  --bg: #0d1206;
+  --panel: #f7f5ec;
+  --accent: #8bc34a;
+  --ink: #12140e;
+  --muted: #6b6f61;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  margin: 0;
+  padding: 0 0 60px;
+}
+header {
+  background: var(--bg);
+  color: #f7f5ec;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 4px solid var(--accent);
+}
+header h1 { margin: 0; font-size: 28px; }
+header h1 span { color: var(--accent); font-weight: 400; font-size: 16px; }
+button {
+  background: var(--accent);
+  border: none;
+  color: #0d1206;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button.danger { background: #d9534f; color: white; }
+main {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.panel {
+  background: var(--panel);
+  border-radius: 10px;
+  padding: 20px 24px;
+}
+.panel h2 { margin-top: 0; font-size: 18px; }
+.hint { color: var(--muted); font-size: 13px; margin-top: -8px; }
+form { display: flex; flex-direction: column; gap: 10px; }
+form label { display: flex; flex-direction: column; font-size: 13px; gap: 4px; color: var(--muted); }
+input, select, textarea {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: inherit;
+}
+textarea { min-height: 60px; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; }
+th { color: var(--muted); font-weight: 600; }
+.result { margin-top: 12px; font-size: 14px; }
+.token-trace { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.tok {
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-family: ui-monospace, monospace;
+  border: 1px solid #ccc;
+}
+.tok.intervened { background: #dff5c6; border-color: var(--accent); }
+.tok.already_correct { background: #eef; }
+.tok.ambiguous { background: #fff3cd; }
+.tok.low_confidence { background: #fde2c8; }
+.tok.no_memory, .tok.below_min_observations { background: #f0f0f0; color: #999; }
+.output-line { font-size: 18px; font-weight: 600; margin: 10px 0; }
+.trace-list { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.trace-list div { padding: 3px 0; border-bottom: 1px dashed #ddd; }
