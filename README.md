@@ -2,9 +2,11 @@
 
 > **At a glance:** A deterministic, user-correction-driven phonetic memory system for speech-to-text outputs. Built with **Python, FastAPI, SQLite and Metaphone**, with explicit confidence thresholds, context-aware corrections, and per-token decision traces.
 >
-> **Evaluation-first:** Includes **11 evaluation scenarios / 14 checks** and **7 pytest unit tests**, covering ambiguity, false interventions, insufficient evidence, and regressions. See [evaluation details](#4-evaluation) and [reproduction steps](RUN.md).
+> **Evaluation-first:** Includes **11 evaluation scenarios / 14 checks** and **7 core pytest unit tests plus evaluation-fixture contract checks**, covering ambiguity, false interventions, insufficient evidence, and regressions. See [evaluation details](#4-evaluation) and [reproduction steps](RUN.md).
 
-**Quick links:** [How to run](RUN.md) · [Evaluation cases](eval/cases.json) · [Tests](tests/test_memory.py) · [Evaluation report](eval/report.md)
+[![Tests and evaluation](https://github.com/shakthi1105/kivi/actions/workflows/ci.yml/badge.svg)](https://github.com/shakthi1105/kivi/actions/workflows/ci.yml)
+
+**Quick links:** [How to run](RUN.md) · [Evaluation methodology](eval/README.md) · [Evaluation cases](eval/cases.json) · [Tests](tests/) · [Evaluation report (previous run)](eval/report.md) · [CI runs](https://github.com/shakthi1105/kivi/actions/workflows/ci.yml)
 
 ---
 
